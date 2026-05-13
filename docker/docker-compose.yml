@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: meeting-room-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: meeting_room
+      MYSQL_USER: meeting_user
+      MYSQL_PASSWORD: meeting_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - meeting-room-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: meeting-room-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - meeting-room-network
+
+volumes:
+  mysql_data:
+
+networks:
+  meeting-room-network:
+    driver: bridge
